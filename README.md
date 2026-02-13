@@ -52,10 +52,10 @@ python main.py
 
 3. **Run the application**
    - Open the folder where you extracted the files
-   - Double-click on ```main.py``` or run in terminal:
+   - Double-click on ```mainf.py``` or run in terminal:
 
    ```
-     python main.py
+     python mainf.py
    
    ```
 ## Requirements
