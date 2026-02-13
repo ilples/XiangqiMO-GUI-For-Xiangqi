@@ -30,7 +30,7 @@ XiangqiMO is a graphical interface program for analyzing Chinese chess (Xiangqi)
 
 ```
 # Clone the repository
-git clone https://github.com/yourusername/XiangqiMO.git
+git clone https://github.com/ilples/XiangqiMO.git
 cd XiangqiMO
 
 # Run the application
