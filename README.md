@@ -34,7 +34,7 @@ git clone https://github.com/ilples/XiangqiMO.git
 cd XiangqiMO
 
 # Run the application
-python main.py
+python mainf.py
 ```
 
 ### Method 2: Graphical (No Git Required)
