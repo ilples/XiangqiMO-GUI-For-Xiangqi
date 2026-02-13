@@ -1,0 +1,5 @@
+{
+    "language": "en",
+    "engine_path": "fairy-stockfish.exe",
+    "depth": 15
+}
