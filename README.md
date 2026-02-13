@@ -17,11 +17,14 @@ XiangqiMO is a graphical interface program for analyzing Chinese chess (Xiangqi)
 
 ### Method 1: Terminal / Command Line
 
+```
+# Clone the repository
 git clone https://github.com/yourusername/XiangqiMO.git
 cd XiangqiMO
 
 # Run the application
 python main.py
+```
 
 ### Method 2: Graphical (No Git Required)
 
@@ -38,11 +41,12 @@ python main.py
 
 3. **Run the application**
    - Open the folder where you extracted the files
-   - Double-click on `main.py` or run in terminal:
-   
-     python main.py
-  
+   - Double-click on ```main.py``` or run in terminal:
 
+   ```
+     python main.py
+   
+   ```
 ## Requirements
 
 - Python 3.7 or higher
