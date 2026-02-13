@@ -13,6 +13,15 @@ XiangqiMO is a graphical interface program for analyzing Chinese chess (Xiangqi)
 - **Board Flipping** — Toggle board orientation for either player's perspective
 - **Undo/Reset** — Easy move management
 
+
+<img width="1493" height="1010" alt="2026-02-13_23-12-51" src="https://github.com/user-attachments/assets/f2865b55-ba33-4ba6-8294-1d994772a50b" />
+
+
+<img width="1491" height="1007" alt="2026-02-13_23-15-50" src="https://github.com/user-attachments/assets/2fb21138-9c50-4dc8-9faa-a680a5a00336" />
+
+
+
+
 ## Installation
 
 ### Method 1: Terminal / Command Line
