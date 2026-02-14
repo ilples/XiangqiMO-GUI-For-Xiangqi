@@ -222,42 +222,59 @@ class StockfishEngine:
                         if mpv_match:
                             mpv = int(mpv_match.group(1))
                             
-                            pv_match = re.search(r'pv\s+([a-z][0-9][a-z][0-9])', output)
-                            if not pv_match:
-                                pv_match = re.search(r'pv\s+([a-z][0-9]{2}[a-z][0-9]{2})', output)
-                            if not pv_match:
-                                pv_match = re.search(r'pv\s+([a-z0-9]{4,5})', output)
+                            # Try multiple regex patterns for UCI moves
+                            move = None
                             
+                            # Pattern 1: Standard UCI (e.g., a2a4)
+                            pv_match = re.search(r'pv\s+([a-i][0-9][a-i][0-9])', output)
                             if pv_match:
                                 move = pv_match.group(1)
-                                
-                                score = "0.00"
-                                cp_match = re.search(r'score cp\s+(-?\d+)', output)
-                                if cp_match:
-                                    cp = int(cp_match.group(1))
-                                    score = f"{cp/100:.2f}"
-                                else:
-                                    mate_match = re.search(r'score mate\s+(-?\d+)', output)
-                                    if mate_match:
-                                        mate = mate_match.group(1)
-                                        score = f"mate {mate}"
-                                
-                                mpv_results[mpv] = (move, score)
+                            
+                            # Pattern 2: With double digits (e.g., a10a9 for Xiangqi)
+                            if not move:
+                                pv_match = re.search(r'pv\s+([a-i][0-9]{2}[a-i][0-9]{2})', output)
+                                if pv_match:
+                                    move = pv_match.group(1)
+                            
+                            # Pattern 3: Any 4-5 character alphanumeric
+                            if not move:
+                                pv_match = re.search(r'pv\s+([a-z0-9]{4,5})', output)
+                                if pv_match:
+                                    move = pv_match.group(1)
+                            
+                            if move:
+                                # Validate move format for Xiangqi
+                                if self.is_valid_uci_move(move):
+                                    score = "0.00"
+                                    cp_match = re.search(r'score cp\s+(-?\d+)', output)
+                                    if cp_match:
+                                        cp = int(cp_match.group(1))
+                                        score = f"{cp/100:.2f}"
+                                    else:
+                                        mate_match = re.search(r'score mate\s+(-?\d+)', output)
+                                        if mate_match:
+                                            mate = mate_match.group(1)
+                                            score = f"mate {mate}"
+                                    
+                                    mpv_results[mpv] = (move, score)
                     
                     if "bestmove" in output:
                         parts = output.split()
                         if len(parts) >= 2:
                             bestmove = parts[1]
+                            if bestmove == "(none)":
+                                bestmove = None
                             time.sleep(0.5)
                             break
                             
                 except queue.Empty:
                     continue
             
+            # Compile results
             for i in range(1, multipv+1):
                 if i in mpv_results:
                     results.append(mpv_results[i])
-                elif i == 1 and bestmove:
+                elif i == 1 and bestmove and self.is_valid_uci_move(bestmove):
                     results.append((bestmove, "0.00"))
                 else:
                     results.append((None, None))
@@ -269,6 +286,53 @@ class StockfishEngine:
             
         except Exception as e:
             return [(None, None)] * multipv
+
+    def is_valid_uci_move(self, move):
+        """
+        Validate if a UCI move string is valid for Xiangqi.
+        
+        Args:
+            move: UCI move string
+            
+        Returns:
+            True if valid, False otherwise
+        """
+        if not move or len(move) < 4:
+            return False
+        
+        try:
+            # Extract from and to squares
+            if len(move) == 4:
+                # Format: a2a4
+                from_file = move[0]
+                from_rank = move[1]
+                to_file = move[2]
+                to_rank = move[3]
+            elif len(move) == 5:
+                # Format: a10a9 (Xiangqi has ranks 1-10)
+                from_file = move[0]
+                from_rank = move[1:3]
+                to_file = move[3]
+                to_rank = move[4:6] if len(move) > 5 else move[4]
+            else:
+                return False
+            
+            # Check if files are a-i (Xiangqi has 9 files)
+            if from_file not in 'abcdefghi' or to_file not in 'abcdefghi':
+                return False
+            
+            # Check if ranks are 1-10
+            try:
+                from_rank_int = int(from_rank)
+                to_rank_int = int(to_rank)
+                if from_rank_int < 1 or from_rank_int > 10 or to_rank_int < 1 or to_rank_int > 10:
+                    return False
+            except ValueError:
+                return False
+            
+            return True
+        except:
+            return False
 
     def analyze(self, fen, depth=18):
         """
@@ -308,6 +372,8 @@ class StockfishEngine:
                         parts = output.split()
                         if len(parts) >= 2:
                             best_move = parts[1]
+                            if best_move == "(none)":
+                                best_move = None
                             break
                     
                     if "score cp" in output:
