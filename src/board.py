@@ -636,11 +636,18 @@ class XiangqiBoard:
         """
         if not self.is_in_check(color):
             return False
-        for (x, y), piece in self.pieces.items():
+        
+        # Collect all pieces of the given color first to avoid dictionary changes during iteration
+        pieces_of_color = []
+        for (x, y), piece in list(self.pieces.items()):
             if (color == 'w' and piece.isupper()) or (color == 'b' and not piece.isupper()):
-                moves = self.generate_pseudo_legal_moves_for_piece(x, y, check_open_king=True)
-                if moves:
-                    return False
+                pieces_of_color.append((x, y, piece))
+        
+        # Check each piece
+        for x, y, piece in pieces_of_color:
+            moves = self.generate_pseudo_legal_moves_for_piece(x, y, check_open_king=True)
+            if moves:
+                return False
         return True
 
     def highlight_check_and_mate(self):
